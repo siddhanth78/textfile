@@ -15,6 +15,9 @@ font = pygame.font.SysFont("Courier", 30)
 line_num = 0
 line_index = 0
 
+buffer = ""
+rel = 0
+
 while True:
     clock.tick(30)
     screen.fill((0,0,0))
@@ -102,10 +105,16 @@ while True:
             elif event.key == pygame.K_TAB:
                 lines[line_num] += "    "
                 cursorx += 18*4
+                line_index += 4
             
             elif event.key == pygame.K_ESCAPE:
                 sys.exit(0)
             
+            #elif event.mod & pygame.KMOD_SHIFT:
+            #    if event.key == pygame.K_LEFT:
+            #       cursorx -= 18
+            #       rel -= 1
+                
             elif event.unicode:
                 lines[line_num] = lines[line_num][:line_index] + event.unicode + lines[line_num][line_index:]
                 line_index += 1
