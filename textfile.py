@@ -69,8 +69,7 @@ while True:
             elif event.key == pygame.K_RETURN:
                 if rel != 0:
                     if rel < 0:
-                        buffer = lines[line_num][line_index:line_index-rel]
-                        print(buffer)
+                        buffer = lines[line_num][line_index+1:line_index-rel+1]
                     elif rel > 0:
                         buffer = lines[line_num][line_index-rel:line_index]
                         print(buffer)
@@ -165,6 +164,19 @@ while True:
                 lines.insert(line_num+1, "") 
                 line_num += 1
                 line_index = 0
+
+            elif (event.key == pygame.K_d) and (event.mod & pygame.KMOD_CTRL):
+                if line_num != 0:
+                    lines = lines[:line_num] + lines[line_num+1:]
+                    if line_num == len(lines):
+                        line_num -= 1
+                        cursory -= 50
+                        if cursory < 50:
+                            cursory = 50
+                    cursorx = 50 + len(lines[line_num])*18
+                else:
+                    lines[line_num] = ""
+                    cursorx = 50
 
             elif event.unicode:
                 lines[line_num] = lines[line_num][:line_index] + event.unicode + lines[line_num][line_index:]
