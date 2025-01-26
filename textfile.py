@@ -19,7 +19,10 @@ rel = 0
 clips = []
 
 view_start = 0
-view_end = 18 
+view_end = 18
+
+view_hs = 0
+view_he = 75
 
 while True:
     clock.tick(20)
@@ -35,7 +38,7 @@ while True:
     in_view = lines[view_start:view_end]
 
     for i in range(len(in_view)):
-        txt_surf = font.render(in_view[i], True, (255,255,255))
+        txt_surf = font.render(in_view[i][view_hs:view_he], True, (255,255,255))
         screen.blit(txt_surf, (48,25+i*25))
     
     for event in pygame.event.get():
@@ -87,6 +90,8 @@ while True:
                 lines.insert(line_num+1, lines[line_num][line_index:])
                 lines[line_num] = lines[line_num][:line_index]
                 line_num += 1
+                view_hs = 0
+                view_he = 75
                 if indent > 0:
                     lines[line_num] = "    "*indent + lines[line_num]
                     line_index = 4*indent
@@ -112,6 +117,11 @@ while True:
                 else:
                     cursorx -= 12
                     line_index -= 1
+                    if line_index <= 75:
+                        view_hs -= 1
+                        if view_hs < 0: view_hs = 0
+                        view_he -= 1
+                        if view_he < 75: view_he = 75
                     if rel != 0:
                         rel -= 1
                         if cursorx < 36:
@@ -136,10 +146,13 @@ while True:
                 else:
                     cursorx += 12
                     line_index += 1
+                    if line_index > 75:
+                        view_hs += 1
+                        view_he += 1
                     if rel != 0:
                         rel += 1
-                    if cursorx > 48+len(lines[line_num])*12:
-                        cursorx = 48+len(lines[line_num])*12
+                    if cursorx > 48+len(lines[line_num][view_hs:view_he])*12:
+                        cursorx = 48+len(lines[line_num][view_hs:view_he])*12
                         line_index = len(lines[line_num])
                         if rel != 0:
                             rel -= 1            
@@ -251,7 +264,12 @@ while True:
             elif event.unicode:
                 lines[line_num] = lines[line_num][:line_index] + event.unicode + lines[line_num][line_index:]
                 line_index += 1
+                if line_index > 75:
+                    view_hs += 1
+                    view_he += 1
                 cursorx += 12
+                if cursorx > 48+75*12:
+                    cursorx = 48+75*12
         
     pygame.display.flip()
 
