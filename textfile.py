@@ -46,19 +46,25 @@ while True:
             if event.key == pygame.K_BACKSPACE:
                 if indent > 0 and lines[line_num].strip() == "":
                     indent -= 1
-                    cursorx -= 18*3
-                    line_index -= 3
-                if lines[line_num] == "":
+                    cursorx -= 18*4
+                    line_index -= 4
+                elif lines[line_num] == "":
                     if line_num != 0:
                         lines = lines[:line_num] + lines[line_num+1:]
                         line_num -= 1
                         cursory -= 50
+                        if line_num < view_start: 
+                            view_start -= 1
+                            view_end -= 1
+                            cursory = 50
                         cursorx = 50 + len(lines[line_num])*18
                         line_index = len(lines[line_num])
                     elif line_num == 0:
                         if cursorx < 50:
                             cursorx = 50
                         line_index = 0
+                    if cursory < 50:
+                        cursory = 50
                 else:
                     lines[line_num] = lines[line_num][:line_index-1] + lines[line_num][line_index:] if line_index != 0 else lines[line_num]
                     if line_index == 0 and line_num!=0:
@@ -243,3 +249,4 @@ while True:
                 cursorx += 18
         
     pygame.display.flip()
+
