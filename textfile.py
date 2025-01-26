@@ -117,21 +117,20 @@ while True:
                 else:
                     cursorx -= 12
                     line_index -= 1
-                    if line_index <= 75:
+                    if cursorx < 48:
+                        cursorx = 48
                         view_hs -= 1
                         if view_hs < 0: view_hs = 0
                         view_he -= 1
                         if view_he < 75: view_he = 75
+
                     if rel != 0:
                         rel -= 1
                         if cursorx < 36:
                             cursorx = 36
                             line_index = -1
                             rel += 1
-                    else:
-                        if cursorx < 48:
-                            cursorx = 48
-                            line_index = 0
+                    if line_index < 0: line_index = 0 
             
             elif event.key == pygame.K_RIGHT:
                 keys = pygame.key.get_pressed()
@@ -146,9 +145,15 @@ while True:
                 else:
                     cursorx += 12
                     line_index += 1
-                    if line_index > 75:
+                    if cursorx > 48+75*12:
+                        cursorx = 48+75*12
                         view_hs += 1
-                        view_he += 1
+                        if line_index > len(lines[line_num]):
+                            line_index = len(lines[line_num])
+                            view_hs -= 1
+                        else:
+                            view_he += 1
+                        
                     if rel != 0:
                         rel += 1
                     if cursorx > 48+len(lines[line_num][view_hs:view_he])*12:
@@ -264,12 +269,11 @@ while True:
             elif event.unicode:
                 lines[line_num] = lines[line_num][:line_index] + event.unicode + lines[line_num][line_index:]
                 line_index += 1
-                if line_index > 75:
-                    view_hs += 1
-                    view_he += 1
                 cursorx += 12
                 if cursorx > 48+75*12:
                     cursorx = 48+75*12
-        
+                    view_hs += 1
+                    view_he += 1
+                        
     pygame.display.flip()
 
