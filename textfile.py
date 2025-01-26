@@ -9,15 +9,17 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((1000, 500))
 cursorx = 50
 cursory = 50
-
-lines = [""]
 font = pygame.font.SysFont("Courier", 30)
+lines = [""]
 line_num = 0
 line_index = 0
 indent = 0
 clip = ""
 rel = 0
 clips = []
+
+view_start = 0
+view_end = 9 
 
 while True:
     clock.tick(30)
@@ -30,8 +32,10 @@ while True:
     elif rel > 0:
         pygame.draw.rect(screen, (128,128,128), [cursorx-18*rel, cursory, 18*rel, 30], 2)
 
-    for i in range(len(lines)):
-        txt_surf = font.render(lines[i], True, (255,255,255))
+    in_view = lines[view_start:view_end]
+
+    for i in range(len(in_view)):
+        txt_surf = font.render(in_view[i], True, (255,255,255))
         screen.blit(txt_surf, (50,50+i*50))
     
     for event in pygame.event.get():
@@ -83,7 +87,12 @@ while True:
                     cursorx += 18*4*indent
                 else:
                     line_index = 0
-            
+                if line_num > view_end-1:
+                    view_start += 1
+                    view_end += 1            
+                if cursory > 450:
+                    cursory = 450
+
             elif event.key == pygame.K_LEFT:
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
@@ -160,9 +169,13 @@ while True:
             elif event.key == pygame.K_UP:
                 cursory -= 50
                 line_num -= 1
+                if line_num < 0:
+                    line_num = 0
                 if cursory < 50:
                     cursory = 50
-                    line_num = 0
+                if line_num == view_start-1:
+                    view_start -= 1
+                    view_end -= 1
                 if len(lines[line_num]) < line_index:
                     cursorx = 50+len(lines[line_num])*18
                     line_index = len(lines[line_num])
@@ -170,9 +183,14 @@ while True:
             elif event.key == pygame.K_DOWN:
                 cursory += 50
                 line_num += 1
-                if cursory > 50*len(lines):
-                    cursory = 50*len(lines)
+                if line_num > len(lines)-1:
                     line_num = len(lines)-1
+                    cursory -= 50
+                if cursory > 450:
+                    cursory = 450
+                if line_num == view_end:
+                    view_start += 1
+                    view_end += 1
                 if len(lines[line_num]) < line_index:
                     cursorx = 50+len(lines[line_num])*18
                     line_index = len(lines[line_num])
